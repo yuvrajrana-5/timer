@@ -123,8 +123,8 @@
 
     <script>
         const intervals = [
-            { type: "Work", duration: 50 },
-            { type: "Break", duration: 12 }
+            { type: "Work", duration: 0.05 },
+            { type: "Break", duration: 0.05 }
         ];
         let totalLoops = 11; // Default to 11 sessions
         let currentLoop = 0;
@@ -166,7 +166,7 @@
 
 function startInterval() {
     const interval = intervals[intervalIndex];
-    let remainingTime =  2; // Use interval duration in seconds
+    let remainingTime = interval.duration * 60; // Use interval duration in seconds
 
     timer = setInterval(() => {
         const mins = Math.floor(remainingTime / 60);
@@ -177,29 +177,31 @@ function startInterval() {
         if (remainingTime < 0) {
             clearInterval(timer);
 
-            // Increment session after Work → Break cycle
-            if (interval.type === "Work" && intervalIndex === 1) {
+            // Update the interval index
+            intervalIndex = (intervalIndex + 1) % intervals.length;
+
+            // Increment session count after a Work interval ends
+            if (interval.type === "Work") {
                 currentLoop++;
                 updateSessionDisplay();
             }
 
-            // Update interval index
-            intervalIndex = (intervalIndex + 1) % intervals.length;
-
-            // Check if all loops are completed
-            if (currentLoop < totalLoops) {
-                startInterval();
-            } else {
+            // Check if all sessions are completed
+            if (currentLoop >= totalLoops) {
                 // Timer completion logic
                 timerElement.textContent = "";
                 sessionElement.style.display = "none"; // Hide session counter
                 controls.style.display = "none"; // Hide play, pause, reset buttons
                 restartContainer.style.display = "flex"; // Show restart container
                 document.body.style.backgroundColor = "#87CEEB"; // Change to sky blue
+            } else {
+                // Start the next interval
+                startInterval();
             }
         }
     }, 1000);
 }
+
 
         function playTimer() {
             if (!timerRunning) {
