@@ -107,7 +107,7 @@
 
         function startInterval() {
             const interval = intervals[intervalIndex];
-            let remainingTime = 1; // For testing, set this to interval.duration * 60 for real durations
+            let remainingTime = interval.duration * 60; // For testing, set this to interval.duration * 60 for real durations
 
             timer = setInterval(() => {
                 const mins = Math.floor(remainingTime / 60);
