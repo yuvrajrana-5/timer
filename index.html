@@ -177,9 +177,11 @@
                 if (remainingTime < 0) {
                     clearInterval(timer);
 
-                    // Increment session after each interval
-                    if (intervalIndex === 1) currentLoop++; // Only after "Break" ends
-                    updateSessionDisplay();
+                    // Increment session after each "Break" ends
+                    if (intervalIndex === 1) { 
+                        currentLoop++; // Only after "Break" ends
+                        updateSessionDisplay();
+                    }
 
                     // Update interval index
                     intervalIndex = (intervalIndex + 1) % intervals.length;
