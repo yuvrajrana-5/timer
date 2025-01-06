@@ -87,10 +87,15 @@
                 if (remainingTime < 0) {
                     clearInterval(timer);
                     intervalIndex = (intervalIndex + 1) % intervals.length;
-                    if (intervalIndex === 0) currentLoop++;
-                    if (currentLoop < totalLoops * 2) {
-                        updateSessionDisplay();
-                        startInterval();
+                   // Increment session count after every Work-Break cycle
+            if (intervalIndex % intervals.length === 0) {
+                currentLoop++;
+                updateSessionDisplay();
+            }
+
+            // Check if all loops are completed
+            if (currentLoop < totalLoops) {
+                startInterval();
                     } else {
             // Timer completion logic
                         timerElement.textContent = "";
