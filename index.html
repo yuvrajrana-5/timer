@@ -17,6 +17,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            transition: background-color 1s ease; /* Smooth transition for color change */
         }
         #timer {
             font-size: 64px;
@@ -130,8 +131,10 @@
                     } else {
                         // Timer completion logic
                         timerElement.textContent = "";
+                        sessionElement.style.display = "none"; // Hide session counter
                         controls.style.display = "none"; // Hide play, pause, reset buttons
                         restartContainer.style.display = "flex"; // Show restart container
+                        document.body.style.backgroundColor = "#87CEEB"; // Change to sky blue
                     }
                 }
             }, 1000);
@@ -158,6 +161,8 @@
                 intervalIndex = 0;
                 controls.style.display = "flex"; // Show controls again if they were hidden
                 restartContainer.style.display = "none"; // Hide restart container if visible
+                sessionElement.style.display = "block"; // Show session counter again
+                document.body.style.backgroundColor = "black"; // Reset background color
                 updateTimerDisplay(intervals[0].duration, 0);
                 updateSessionDisplay();
             }
