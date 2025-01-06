@@ -92,7 +92,35 @@
                         updateSessionDisplay();
                         startInterval();
                     } else {
-                        timerElement.textContent = "Complete!";
+            // Timer completion logic
+                        timerElement.textContent = "";
+                        const gif = document.createElement("img");
+                        gif.src = "celebration.gif"; // Update with your GIF path
+                        gif.alt = "Celebration";
+                        gif.style.width = "300px";
+                        gif.style.height = "300px";
+                        timerElement.appendChild(gif);
+
+                        const restartButton = document.createElement("button");
+                        restartButton.textContent = "Restart";
+                        restartButton.style.marginTop = "20px";
+                        restartButton.style.padding = "10px 20px";
+                        restartButton.style.fontSize = "18px";
+                        restartButton.style.backgroundColor = "#333";
+                        restartButton.style.color = "white";
+                        restartButton.style.border = "none";
+                        restartButton.style.cursor = "pointer";
+                        restartButton.style.borderRadius = "5px";
+                        restartButton.onmouseover = () => restartButton.style.backgroundColor = "#555";
+                        restartButton.onmouseout = () => restartButton.style.backgroundColor = "#333";
+                        restartButton.addEventListener("click", () => {
+                            resetTimer();
+                            timerElement.innerHTML = "";
+                            updateTimerDisplay(intervals[0].duration, 0);
+                            updateSessionDisplay();
+                        });
+
+                        timerElement.appendChild(restartButton);
                         timerRunning = false;
                     }
                 }
