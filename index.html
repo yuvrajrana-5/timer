@@ -49,119 +49,120 @@
         <button id="pause">Pause</button>
         <button id="reset">Reset</button>
     </div>
-    <script>
-        const intervals = [
-            { type: "Work", duration: 50 },
-            { type: "Break", duration: 12 }
-        ];
-        const totalLoops = 11;
-        let currentLoop = 0;
-        let intervalIndex = 0;
-        let timer;
-        let timerRunning = false;
+<script>
+    const intervals = [
+        { type: "Work", duration: 50 },
+        { type: "Break", duration: 12 }
+    ];
+    const totalLoops = 11;
+    let currentLoop = 0;
+    let intervalIndex = 0;
+    let timer;
+    let timerRunning = false;
 
-        const timerElement = document.getElementById("timer");
-        const sessionElement = document.getElementById("session");
-        const playButton = document.getElementById("play");
-        const pauseButton = document.getElementById("pause");
-        const resetButton = document.getElementById("reset");
+    const timerElement = document.getElementById("timer");
+    const sessionElement = document.getElementById("session");
+    const playButton = document.getElementById("play");
+    const pauseButton = document.getElementById("pause");
+    const resetButton = document.getElementById("reset");
 
-        function updateTimerDisplay(minutes, seconds) {
-            timerElement.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-        }
+    function updateTimerDisplay(minutes, seconds) {
+        timerElement.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    }
 
-        function updateSessionDisplay() {
-            sessionElement.textContent = `Session: ${Math.floor(currentLoop / 2) + 1}`;
-        }
+    function updateSessionDisplay() {
+        sessionElement.textContent = `Session: ${Math.floor(currentLoop / 2) + 1}`;
+    }
 
-        function startInterval() {
-           const interval = intervals[intervalIndex];
-    let remainingTime = 3; // Quick testing, set this to 5 for short duration
+    function startInterval() {
+        const interval = intervals[intervalIndex];
+        let remainingTime = 2; // Quick testing, set this to interval.duration * 60 for real durations
 
-    timer = setInterval(() => {
-        const mins = Math.floor(remainingTime / 60);
-        const secs = remainingTime % 60;
-        updateTimerDisplay(mins, secs);
-        remainingTime--;
+        timer = setInterval(() => {
+            const mins = Math.floor(remainingTime / 60);
+            const secs = remainingTime % 60;
+            updateTimerDisplay(mins, secs);
+            remainingTime--;
 
-        if (remainingTime < 0) {
-            clearInterval(timer);
-            intervalIndex = (intervalIndex + 1) % intervals.length;
+            if (remainingTime < 0) {
+                clearInterval(timer);
 
-            // Increment session count after each Work-Break cycle
-            if (intervalIndex === 0) { // after Break, we've completed one cycle
+                // Increment session after each interval
                 currentLoop++;
                 updateSessionDisplay();
-            }
 
-            // Check if all loops are completed
-            if (currentLoop < totalLoops) {
-                startInterval();
-                    } else {
-            // Timer completion logic
-                        timerElement.textContent = "";
-                        const gif = document.createElement("img");
-                        gif.src = "celebration.gif"; // Update with your GIF path
-                        gif.alt = "Celebration";
-                        gif.style.width = "300px";
-                        gif.style.height = "300px";
-                        timerElement.appendChild(gif);
+                // Update interval index
+                intervalIndex = (intervalIndex + 1) % intervals.length;
 
-                        const restartButton = document.createElement("button");
-                        restartButton.textContent = "Restart";
-                        restartButton.style.marginTop = "20px";
-                        restartButton.style.padding = "10px 20px";
-                        restartButton.style.fontSize = "18px";
-                        restartButton.style.backgroundColor = "#333";
-                        restartButton.style.color = "white";
-                        restartButton.style.border = "none";
-                        restartButton.style.cursor = "pointer";
-                        restartButton.style.borderRadius = "5px";
-                        restartButton.onmouseover = () => restartButton.style.backgroundColor = "#555";
-                        restartButton.onmouseout = () => restartButton.style.backgroundColor = "#333";
-                        restartButton.addEventListener("click", () => {
-                            resetTimer();
-                            timerElement.innerHTML = "";
-                            updateTimerDisplay(intervals[0].duration, 0);
-                            updateSessionDisplay();
-                        });
+                // Check if all loops are completed
+                if (currentLoop < totalLoops * 2) {
+                    startInterval();
+                } else {
+                    // Timer completion logic
+                    timerElement.textContent = "";
+                    const gif = document.createElement("img");
+                    gif.src = "celebration.gif"; // Update with your GIF path
+                    gif.alt = "Celebration";
+                    gif.style.width = "300px";
+                    gif.style.height = "300px";
+                    timerElement.appendChild(gif);
 
-                        timerElement.appendChild(restartButton);
-                        timerRunning = false;
-                    }
+                    const restartButton = document.createElement("button");
+                    restartButton.textContent = "Restart";
+                    restartButton.style.marginTop = "20px";
+                    restartButton.style.padding = "10px 20px";
+                    restartButton.style.fontSize = "18px";
+                    restartButton.style.backgroundColor = "#333";
+                    restartButton.style.color = "white";
+                    restartButton.style.border = "none";
+                    restartButton.style.cursor = "pointer";
+                    restartButton.style.borderRadius = "5px";
+                    restartButton.onmouseover = () => restartButton.style.backgroundColor = "#555";
+                    restartButton.onmouseout = () => restartButton.style.backgroundColor = "#333";
+                    restartButton.addEventListener("click", () => {
+                        resetTimer();
+                        timerElement.innerHTML = "";
+                        updateTimerDisplay(intervals[0].duration, 0);
+                        updateSessionDisplay();
+                    });
+
+                    timerElement.appendChild(restartButton);
+                    timerRunning = false;
                 }
-            }, 1000);
-        }
-
-        function playTimer() {
-            if (!timerRunning) {
-                timerRunning = true;
-                startInterval();
             }
+        }, 1000);
+    }
+
+    function playTimer() {
+        if (!timerRunning) {
+            timerRunning = true;
+            startInterval();
         }
+    }
 
-        function pauseTimer() {
-            clearInterval(timer);
-            timerRunning = false;
-        }
+    function pauseTimer() {
+        clearInterval(timer);
+        timerRunning = false;
+    }
 
-        function resetTimer() {
-            clearInterval(timer);
-            timerRunning = false;
-            currentLoop = 0;
-            intervalIndex = 0;
-            updateTimerDisplay(intervals[0].duration, 0);
-            updateSessionDisplay();
-        }
-
-        // Event Listeners
-        playButton.addEventListener("click", playTimer);
-        pauseButton.addEventListener("click", pauseTimer);
-        resetButton.addEventListener("click", resetTimer);
-
-        // Initial Setup
+    function resetTimer() {
+        clearInterval(timer);
+        timerRunning = false;
+        currentLoop = 0;
+        intervalIndex = 0;
+        updateTimerDisplay(intervals[0].duration, 0);
         updateSessionDisplay();
-    </script>
+    }
+
+    // Event Listeners
+    playButton.addEventListener("click", playTimer);
+    pauseButton.addEventListener("click", pauseTimer);
+    resetButton.addEventListener("click", resetTimer);
+
+    // Initial Setup
+    updateSessionDisplay();
+</script>
+
     <script defer src="https://dagammla.gitlab.io/keep-silk-open/keep.js">
 </script>
 
