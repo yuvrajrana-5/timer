@@ -164,42 +164,42 @@
             sessionElement.textContent = `Session: ${Math.floor(currentLoop / 2) + 1}`;
         }
 
-        function startInterval() {
-            const interval = intervals[intervalIndex];
-            let remainingTime = 2; // For testing, set this to interval.duration * 60 for real durations
+function startInterval() {
+    const interval = intervals[intervalIndex];
+    let remainingTime = 2; // For testing, set this to interval.duration * 60 for real durations
 
-            timer = setInterval(() => {
-                const mins = Math.floor(remainingTime / 60);
-                const secs = remainingTime % 60;
-                updateTimerDisplay(mins, secs);
-                remainingTime--;
+    timer = setInterval(() => {
+        const mins = Math.floor(remainingTime / 60);
+        const secs = remainingTime % 60;
+        updateTimerDisplay(mins, secs);
+        remainingTime--;
 
-                if (remainingTime < 0) {
-                    clearInterval(timer);
+        if (remainingTime < 0) {
+            clearInterval(timer);
 
-                    // Increment session after each "Break" ends
-                    if (intervalIndex === 1) { 
-                        currentLoop++; // Only after "Break" ends
-                        updateSessionDisplay();
-                    }
+            // Check if the current interval is a "Break"
+            if (interval.type === "Break") {
+                currentLoop++; // Increment session after completing a full work-break cycle
+                updateSessionDisplay();
+            }
 
-                    // Update interval index
-                    intervalIndex = (intervalIndex + 1) % intervals.length;
+            // Update interval index
+            intervalIndex = (intervalIndex + 1) % intervals.length;
 
-                    // Check if all loops are completed
-                    if (currentLoop < totalLoops * 2) {
-                        startInterval();
-                    } else {
-                        // Timer completion logic
-                        timerElement.textContent = "";
-                        sessionElement.style.display = "none"; // Hide session counter
-                        controls.style.display = "none"; // Hide play, pause, reset buttons
-                        restartContainer.style.display = "flex"; // Show restart container
-                        document.body.style.backgroundColor = "#87CEEB"; // Change to sky blue
-                    }
-                }
-            }, 1000);
+            // Check if all loops are completed
+            if (currentLoop < totalLoops) {
+                startInterval();
+            } else {
+                // Timer completion logic
+                timerElement.textContent = "";
+                sessionElement.style.display = "none"; // Hide session counter
+                controls.style.display = "none"; // Hide play, pause, reset buttons
+                restartContainer.style.display = "flex"; // Show restart container
+                document.body.style.backgroundColor = "#87CEEB"; // Change to sky blue
+            }
         }
+    }, 1000);
+}
 
         function playTimer() {
             if (!timerRunning) {
