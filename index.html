@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #timer {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        #session {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .controls button {
+            font-size: 18px;
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .controls button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="timer">50:00</div>
+    <div id="session">Session: 1</div>
+    <div class="controls">
+        <button id="play">Play</button>
+        <button id="pause">Pause</button>
+        <button id="reset">Reset</button>
+    </div>
+    <script>
+        const intervals = [
+            { type: "Work", duration: 50 },
+            { type: "Break", duration: 12 }
+        ];
+        const totalLoops = 11;
+        let currentLoop = 0;
+        let intervalIndex = 0;
+        let timer;
+        let timerRunning = false;
+
+        const timerElement = document.getElementById("timer");
+        const sessionElement = document.getElementById("session");
+        const playButton = document.getElementById("play");
+        const pauseButton = document.getElementById("pause");
+        const resetButton = document.getElementById("reset");
+
+        function updateTimerDisplay(minutes, seconds) {
+            timerElement.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        }
+
+        function updateSessionDisplay() {
+            sessionElement.textContent = `Session: ${Math.floor(currentLoop / 2) + 1}`;
+        }
+
+        function startInterval() {
+            const interval = intervals[intervalIndex];
+            let remainingTime = interval.duration * 60;
+
+            timer = setInterval(() => {
+                const mins = Math.floor(remainingTime / 60);
+                const secs = remainingTime % 60;
+                updateTimerDisplay(mins, secs);
+                remainingTime--;
+
+                if (remainingTime < 0) {
+                    clearInterval(timer);
+                    intervalIndex = (intervalIndex + 1) % intervals.length;
+                    if (intervalIndex === 0) currentLoop++;
+                    if (currentLoop < totalLoops * 2) {
+                        updateSessionDisplay();
+                        startInterval();
+                    } else {
+                        timerElement.textContent = "Complete!";
+                        timerRunning = false;
+                    }
+                }
+            }, 1000);
+        }
+
+        function playTimer() {
+            if (!timerRunning) {
+                timerRunning = true;
+                startInterval();
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timer);
+            timerRunning = false;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timerRunning = false;
+            currentLoop = 0;
+            intervalIndex = 0;
+            updateTimerDisplay(intervals[0].duration, 0);
+            updateSessionDisplay();
+        }
+
+        // Event Listeners
+        playButton.addEventListener("click", playTimer);
+        pauseButton.addEventListener("click", pauseTimer);
+        resetButton.addEventListener("click", resetTimer);
+
+        // Initial Setup
+        updateSessionDisplay();
+    </script>
+</body>
+</html>
