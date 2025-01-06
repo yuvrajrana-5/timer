@@ -76,19 +76,20 @@
 
         function startInterval() {
             const interval = intervals[intervalIndex];
-            let remainingTime = 5;
+    let remainingTime = 5; // For quick testing, you can set this back to `interval.duration * 60`
 
-            timer = setInterval(() => {
-                const mins = Math.floor(remainingTime / 60);
-                const secs = remainingTime % 60;
-                updateTimerDisplay(mins, secs);
-                remainingTime--;
+    timer = setInterval(() => {
+        const mins = Math.floor(remainingTime / 60);
+        const secs = remainingTime % 60;
+        updateTimerDisplay(mins, secs);
+        remainingTime--;
 
-                if (remainingTime < 0) {
-                    clearInterval(timer);
-                    intervalIndex = (intervalIndex + 1) % intervals.length;
-                   // Increment session count after every Work-Break cycle
-            if (intervalIndex % intervals.length === 0) {
+        if (remainingTime < 0) {
+            clearInterval(timer);
+            intervalIndex = (intervalIndex + 1) % intervals.length;
+
+            // Increment session after completing a Work-Break cycle (every 2 intervals)
+            if (intervalIndex === 0) {
                 currentLoop++;
                 updateSessionDisplay();
             }
