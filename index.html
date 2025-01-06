@@ -166,7 +166,7 @@
 
 function startInterval() {
     const interval = intervals[intervalIndex];
-    let remainingTime = 2; // For testing, set this to interval.duration * 60 for real durations
+    let remainingTime =  2; // Use interval duration in seconds
 
     timer = setInterval(() => {
         const mins = Math.floor(remainingTime / 60);
@@ -177,9 +177,9 @@ function startInterval() {
         if (remainingTime < 0) {
             clearInterval(timer);
 
-            // Check if the current interval is a "Break"
-            if (interval.type === "Break") {
-                currentLoop++; // Increment session after completing a full work-break cycle
+            // Increment session after Work → Break cycle
+            if (interval.type === "Work" && intervalIndex === 1) {
+                currentLoop++;
                 updateSessionDisplay();
             }
 
