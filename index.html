@@ -75,8 +75,8 @@
         }
 
         function startInterval() {
-            const interval = intervals[intervalIndex];
-    let remainingTime = 5; // For quick testing, you can set this back to `interval.duration * 60`
+           const interval = intervals[intervalIndex];
+    let remainingTime = 3; // Quick testing, set this to 5 for short duration
 
     timer = setInterval(() => {
         const mins = Math.floor(remainingTime / 60);
@@ -88,8 +88,8 @@
             clearInterval(timer);
             intervalIndex = (intervalIndex + 1) % intervals.length;
 
-            // Increment session after completing a Work-Break cycle (every 2 intervals)
-            if (intervalIndex === 0) {
+            // Increment session count after each Work-Break cycle
+            if (intervalIndex === 0) { // after Break, we've completed one cycle
                 currentLoop++;
                 updateSessionDisplay();
             }
