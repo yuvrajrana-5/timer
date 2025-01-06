@@ -17,7 +17,34 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            transition: background-color 1s ease; /* Smooth transition for color change */
+            transition: background-color 1s ease;
+        }
+        #start-page, #timer-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        #welcome-text {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .welcome-gif {
+            width: 250px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .session-buttons button {
+            font-size: 18px;
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .session-buttons button:hover {
+            background-color: #555;
         }
         #timer {
             font-size: 64px;
@@ -48,7 +75,7 @@
         }
         #restart-container img {
             width: 300px;
-            height: 300px;
+            height: auto;
         }
         #restart-container button {
             margin-top: 10px;
@@ -66,28 +93,47 @@
     </style>
 </head>
 <body>
-    <div id="timer">50:00</div>
-    <div id="session">Session: 1</div>
-    <div class="controls">
-        <button id="play">Play</button>
-        <button id="pause">Pause</button>
-        <button id="reset">Reset</button>
+    <!-- Start Page -->
+    <div id="start-page">
+        <div id="welcome-text">Welcome</div>
+        <img src="gojo.gif" alt="Welcome GIF" class="welcome-gif">
+        <h1>How many sessions are you planning?</h1>
+        <div class="session-buttons">
+            <button onclick="selectSessions(1)">1</button>
+            <button onclick="selectSessions(3)">3</button>
+            <button onclick="selectSessions(6)">6</button>
+            <button onclick="selectSessions(11)">11</button>
+        </div>
     </div>
-    <div id="restart-container">
-        <img id="celebration-gif" src="celebration.gif" alt="Celebration">
-        <button id="restart">Restart</button>
+
+    <!-- Timer Page -->
+    <div id="timer-page">
+        <div id="timer">50:00</div>
+        <div id="session">Session: 1</div>
+        <div class="controls">
+            <button id="play">Play</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
+        </div>
+        <div id="restart-container">
+            <img id="celebration-gif" src="celebration.gif" alt="Celebration">
+            <button id="restart">Restart</button>
+        </div>
     </div>
+
     <script>
         const intervals = [
             { type: "Work", duration: 50 },
             { type: "Break", duration: 12 }
         ];
-        const totalLoops = 11;
+        let totalLoops = 11; // Default to 11 sessions
         let currentLoop = 0;
         let intervalIndex = 0;
         let timer;
         let timerRunning = false;
 
+        const startPage = document.getElementById("start-page");
+        const timerPage = document.getElementById("timer-page");
         const timerElement = document.getElementById("timer");
         const sessionElement = document.getElementById("session");
         const playButton = document.getElementById("play");
@@ -96,6 +142,19 @@
         const restartButton = document.getElementById("restart");
         const restartContainer = document.getElementById("restart-container");
         const controls = document.querySelector(".controls");
+
+        // Show start page on load
+        window.onload = () => {
+            startPage.style.display = "flex";
+        };
+
+        function selectSessions(sessions) {
+            totalLoops = sessions;
+            startPage.style.display = "none";
+            timerPage.style.display = "flex";
+            updateSessionDisplay();
+            updateTimerDisplay(intervals[0].duration, 0);
+        }
 
         function updateTimerDisplay(minutes, seconds) {
             timerElement.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
@@ -107,7 +166,7 @@
 
         function startInterval() {
             const interval = intervals[intervalIndex];
-            let remainingTime = 2; // For testing, set this to interval.duration * 60 for real durations
+            let remainingTime = 3; // For testing, set this to interval.duration * 60 for real durations
 
             timer = setInterval(() => {
                 const mins = Math.floor(remainingTime / 60);
@@ -119,7 +178,7 @@
                     clearInterval(timer);
 
                     // Increment session after each interval
-                    currentLoop++;
+                    if (intervalIndex === 1) currentLoop++; // Only after "Break" ends
                     updateSessionDisplay();
 
                     // Update interval index
@@ -159,8 +218,8 @@
                 timerRunning = false;
                 currentLoop = 0;
                 intervalIndex = 0;
-                controls.style.display = "flex"; // Show controls again if they were hidden
-                restartContainer.style.display = "none"; // Hide restart container if visible
+                controls.style.display = "flex"; // Show controls again
+                restartContainer.style.display = "none"; // Hide restart container
                 sessionElement.style.display = "block"; // Show session counter again
                 document.body.style.backgroundColor = "black"; // Reset background color
                 updateTimerDisplay(intervals[0].duration, 0);
@@ -170,8 +229,8 @@
 
         function restartTimer() {
             resetTimer();
-            timerElement.textContent = "50:00";
-            controls.style.display = "flex"; // Show controls again
+            startPage.style.display = "flex";
+            timerPage.style.display = "none";
         }
 
         // Event Listeners
@@ -179,10 +238,8 @@
         pauseButton.addEventListener("click", pauseTimer);
         resetButton.addEventListener("click", resetTimer);
         restartButton.addEventListener("click", restartTimer);
-
-        // Initial Setup
-        updateSessionDisplay();
     </script>
+
 
 
     <script defer src="https://dagammla.gitlab.io/keep-silk-open/keep.js">
