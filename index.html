@@ -50,19 +50,6 @@
             width: 300px;
             height: 300px;
         }
-        #restart-container button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #333;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        #restart-container button:hover {
-            background-color: #555;
-        }
     </style>
 </head>
 <body>
@@ -70,12 +57,9 @@
     <div id="session">Session: 1</div>
     <div class="controls">
         <button id="play">Play</button>
-        <button id="pause">Pause</button>
-        <button id="reset">Reset</button>
     </div>
     <div id="restart-container">
         <img id="celebration-gif" src="celebration.gif" alt="Celebration">
-        <button id="restart">Restart</button>
     </div>
     <script>
         const intervals = [
@@ -87,13 +71,11 @@
         let intervalIndex = 0;
         let timer;
         let timerRunning = false;
+        let remainingTime = intervals[intervalIndex].duration * 60; // To handle paused time
 
         const timerElement = document.getElementById("timer");
         const sessionElement = document.getElementById("session");
         const playButton = document.getElementById("play");
-        const pauseButton = document.getElementById("pause");
-        const resetButton = document.getElementById("reset");
-        const restartButton = document.getElementById("restart");
         const restartContainer = document.getElementById("restart-container");
         const controls = document.querySelector(".controls");
 
@@ -107,7 +89,6 @@
 
         function startInterval() {
             const interval = intervals[intervalIndex];
-            let remainingTime = interval.duration * 60; // For testing, set this to interval.duration * 60 for real durations
 
             timer = setInterval(() => {
                 const mins = Math.floor(remainingTime / 60);
@@ -127,12 +108,13 @@
 
                     // Check if all loops are completed
                     if (currentLoop < totalLoops * 2) {
+                        remainingTime = intervals[intervalIndex].duration * 60;
                         startInterval();
                     } else {
                         // Timer completion logic
                         timerElement.textContent = "";
                         sessionElement.style.display = "none"; // Hide session counter
-                        controls.style.display = "none"; // Hide play, pause, reset buttons
+                        controls.style.display = "none"; // Hide play button
                         restartContainer.style.display = "flex"; // Show restart container
                         document.body.style.backgroundColor = "#87CEEB"; // Change to sky blue
                     }
@@ -143,6 +125,8 @@
         function playTimer() {
             if (!timerRunning) {
                 timerRunning = true;
+                controls.innerHTML = `<button id="pause">Pause</button>`;
+                document.getElementById("pause").addEventListener("click", pauseTimer);
                 startInterval();
             }
         }
@@ -150,39 +134,28 @@
         function pauseTimer() {
             clearInterval(timer);
             timerRunning = false;
+            const pauseButton = document.getElementById("pause");
+            pauseButton.textContent = "Resume";
+            pauseButton.removeEventListener("click", pauseTimer);
+            pauseButton.addEventListener("click", resumeTimer);
         }
 
-        function resetTimer() {
-            const confirmReset = confirm("Are you sure you want to reset?");
-            if (confirmReset) {
-                clearInterval(timer);
-                timerRunning = false;
-                currentLoop = 0;
-                intervalIndex = 0;
-                controls.style.display = "flex"; // Show controls again if they were hidden
-                restartContainer.style.display = "none"; // Hide restart container if visible
-                sessionElement.style.display = "block"; // Show session counter again
-                document.body.style.backgroundColor = "black"; // Reset background color
-                updateTimerDisplay(intervals[0].duration, 0);
-                updateSessionDisplay();
-            }
-        }
-
-        function restartTimer() {
-            resetTimer();
-            timerElement.textContent = "50:00";
-            controls.style.display = "flex"; // Show controls again
+        function resumeTimer() {
+            timerRunning = true;
+            const pauseButton = document.getElementById("pause");
+            pauseButton.textContent = "Pause";
+            pauseButton.removeEventListener("click", resumeTimer);
+            pauseButton.addEventListener("click", pauseTimer);
+            startInterval();
         }
 
         // Event Listeners
         playButton.addEventListener("click", playTimer);
-        pauseButton.addEventListener("click", pauseTimer);
-        resetButton.addEventListener("click", resetTimer);
-        restartButton.addEventListener("click", restartTimer);
 
         // Initial Setup
         updateSessionDisplay();
     </script>
+
 
 
     <script defer src="https://dagammla.gitlab.io/keep-silk-open/keep.js">
