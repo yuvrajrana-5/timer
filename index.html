@@ -132,6 +132,9 @@
         <img src="celebration.gif" alt="Congratulations Gif" class="end-gif">
     </div>
 
+    <!-- Audio element for the alert sound -->
+    <audio id="timerAlert" src="alert.mp3" preload="auto"></audio>
+
     <script>
         let timerElement = document.getElementById('timer');
         let sessionTitle = document.getElementById('sessionTitle');
@@ -145,7 +148,7 @@
         let isWorkPhase = true;
         let timerInterval;
         let paused = true;
-        let remainingTime = 3000; // 2 seconds for work phase (adjustable)
+        let remainingTime = 3000; // 3000 seconds for work phase (adjustable)
 
         window.onbeforeunload = function () {
             return 'Are you sure you want to refresh?';
@@ -155,7 +158,7 @@
             totalSessions = sessions;
             currentSession = 1;
             sessionTitle.textContent = `Session: ${currentSession} `;
-            remainingTime = 3000; // Reset timer to 2 seconds for work phase
+            remainingTime = 3000; // Reset timer to 3000 seconds for work phase
             timerElement.textContent = formatTime(remainingTime);
             homepage.classList.add('hidden');
             timerPage.classList.remove('hidden');
@@ -181,11 +184,14 @@
 
             if (remainingTime <= 0) {
                 clearInterval(timerInterval);
+                
+                // Play the alert sound
+                playAlertSound();
 
                 if (isWorkPhase) {
                     // Transition to break phase
                     isWorkPhase = false;
-                    remainingTime = 720; // Set break duration
+                    remainingTime = 720; // Set break duration 720
                     startNewPhase('Break');
                 } else {
                     // Transition to next session or end Pomodoro
@@ -195,11 +201,16 @@
                     if (currentSession > totalSessions) {
                         endPomodoro();
                     } else {
-                        remainingTime = 3000; // Set work duration
+                        remainingTime = 3000; // Set work duration 3000
                         startNewPhase('Work');
                     }
                 }
             }
+        }
+
+        function playAlertSound() {
+            const alertSound = document.getElementById('timerAlert');
+            alertSound.play(); // Play the alert sound when the timer ends
         }
 
         function startNewPhase(phase) {
@@ -221,6 +232,7 @@
             endPage.classList.remove('hidden');
         }
     </script>
+
 
      <script defer src="https://dagammla.gitlab.io/keep-silk-open/keep.js">
 </script>
