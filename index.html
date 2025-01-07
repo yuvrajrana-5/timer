@@ -6,160 +6,186 @@
     <title>Pomodoro Timer</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
             padding: 0;
-            background-color: black;
-            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .black-bg {
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            transition: background-color 1s ease; /* Smooth transition for color change */
         }
-        #timer {
-            font-size: 64px;
-            margin-bottom: 20px;
+        .blue-bg {
+            background-color: #4a90e2;
+            color: #fff;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        #session {
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-        .controls button {
-            font-size: 18px;
-            margin: 5px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
+        .button {
+            background-color: #444;
+            color: #fff;
             border: none;
+            padding: 15px 30px;
+            margin: 10px;
             cursor: pointer;
             border-radius: 5px;
         }
-        .controls button:hover {
-            background-color: #555;
+        .button:hover {
+            background-color: #666;
         }
-        #restart-container {
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .hidden {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
         }
-        #restart-container img {
-            width: 300px;
-            height: 300px;
+        #timer {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        #sessionTitle {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .welcome-gif {
+            width: 10%; /* Half the original size */
+        }
+        .end-gif {
+            width: 20%; /* Slightly larger than the welcome GIF */
         }
     </style>
 </head>
 <body>
-    <div id="timer">50:00</div>
-    <div id="session">Session: 1</div>
-    <div class="controls">
-        <button id="play">Play</button>
+    <div id="homepage" class="black-bg">
+        <h1>Welcome!</h1>
+        <img src="gojo.gif" alt="Welcome Gif" class="welcome-gif">
+        <p>How many sessions would you like to do? One session is split into 50:12 minutes.</p>
+        <div class="button-container">
+            <button class="button" onclick="navigateToPage(1)">1</button>
+            <button class="button" onclick="navigateToPage(3)">3</button>
+            <button class="button" onclick="navigateToPage(6)">6</button>
+            <button class="button" onclick="navigateToPage(11)">11</button>
+        </div>
     </div>
-    <div id="restart-container">
-        <img id="celebration-gif" src="celebration.gif" alt="Celebration">
+
+    <div id="timerPage" class="black-bg hidden">
+        <p id="timer">00:02</p>
+        <h1 id="sessionTitle">Session: 1</h1>
+        <button class="button" id="controlButton" onclick="toggleTimer()">Start</button>
     </div>
+
+    <div id="endPage" class="blue-bg hidden">
+        <h1>Well done!</h1>
+        <img src="celebration.gif" alt="Congratulations Gif" class="end-gif">
+    </div>
+
+
+
     <script>
-        const intervals = [
-            { type: "Work", duration: 50 },
-            { type: "Break", duration: 12 }
-        ];
-        const totalLoops = 11;
-        let currentLoop = 0;
-        let intervalIndex = 0;
-        let timer;
-        let timerRunning = false;
-        let remainingTime = intervals[intervalIndex].duration * 60; // To handle paused time
+        let timerElement = document.getElementById('timer');
+        let sessionTitle = document.getElementById('sessionTitle');
+        let controlButton = document.getElementById('controlButton');
+        let homepage = document.getElementById('homepage');
+        let timerPage = document.getElementById('timerPage');
+        let endPage = document.getElementById('endPage');
 
-        const timerElement = document.getElementById("timer");
-        const sessionElement = document.getElementById("session");
-        const playButton = document.getElementById("play");
-        const restartContainer = document.getElementById("restart-container");
-        const controls = document.querySelector(".controls");
+        let totalSessions = 1;
+        let currentSession = 1;
+        let isWorkPhase = true;
+        let timerInterval;
+        let paused = true;
+        let remainingTime = 2; // 2 seconds for work phase (adjustable)
 
-        function updateTimerDisplay(minutes, seconds) {
-            timerElement.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        window.onbeforeunload = function () {
+            return 'Are you sure you want to refresh?';
+        };
+
+        function navigateToPage(sessions) {
+            totalSessions = sessions;
+            currentSession = 1;
+            sessionTitle.textContent = `Session: ${currentSession} `;
+            remainingTime = 2; // Reset timer to 2 seconds for work phase
+            timerElement.textContent = formatTime(remainingTime);
+            homepage.classList.add('hidden');
+            timerPage.classList.remove('hidden');
         }
 
-        function updateSessionDisplay() {
-            sessionElement.textContent = `Session: ${Math.floor(currentLoop / 2) + 1}`;
-        }
-
-        function startInterval() {
-            const interval = intervals[intervalIndex];
-
-            timer = setInterval(() => {
-                const mins = Math.floor(remainingTime / 60);
-                const secs = remainingTime % 60;
-                updateTimerDisplay(mins, secs);
-                remainingTime--;
-
-                if (remainingTime < 0) {
-                    clearInterval(timer);
-
-                    // Increment session after each interval
-                    currentLoop++;
-                    updateSessionDisplay();
-
-                    // Update interval index
-                    intervalIndex = (intervalIndex + 1) % intervals.length;
-
-                    // Check if all loops are completed
-                    if (currentLoop < totalLoops * 2) {
-                        remainingTime = intervals[intervalIndex].duration * 60;
-                        startInterval();
-                    } else {
-                        // Timer completion logic
-                        timerElement.textContent = "";
-                        sessionElement.style.display = "none"; // Hide session counter
-                        controls.style.display = "none"; // Hide play button
-                        restartContainer.style.display = "flex"; // Show restart container
-                        document.body.style.backgroundColor = "#87CEEB"; // Change to sky blue
-                    }
-                }
-            }, 1000);
-        }
-
-        function playTimer() {
-            if (!timerRunning) {
-                timerRunning = true;
-                controls.innerHTML = `<button id="pause">Pause</button>`;
-                document.getElementById("pause").addEventListener("click", pauseTimer);
-                startInterval();
+        function toggleTimer() {
+            if (paused) {
+                // Resume timer
+                paused = false;
+                controlButton.textContent = 'Pause';
+                timerInterval = setInterval(countdown, 1000);
+            } else {
+                // Pause timer
+                paused = true;
+                controlButton.textContent = 'Resume';
+                clearInterval(timerInterval);
             }
         }
 
-        function pauseTimer() {
-            clearInterval(timer);
-            timerRunning = false;
-            const pauseButton = document.getElementById("pause");
-            pauseButton.textContent = "Resume";
-            pauseButton.removeEventListener("click", pauseTimer);
-            pauseButton.addEventListener("click", resumeTimer);
+        function countdown() {
+            remainingTime--;
+            timerElement.textContent = formatTime(remainingTime);
+
+            if (remainingTime <= 0) {
+                clearInterval(timerInterval);
+
+                if (isWorkPhase) {
+                    // Transition to break phase
+                    isWorkPhase = false;
+                    remainingTime = 2; // Set break duration
+                    startNewPhase('Break');
+                } else {
+                    // Transition to next session or end Pomodoro
+                    isWorkPhase = true;
+                    currentSession++;
+
+                    if (currentSession > totalSessions) {
+                        endPomodoro();
+                    } else {
+                        remainingTime = 2; // Set work duration
+                        startNewPhase('Work');
+                    }
+                }
+            }
         }
 
-        function resumeTimer() {
-            timerRunning = true;
-            const pauseButton = document.getElementById("pause");
-            pauseButton.textContent = "Pause";
-            pauseButton.removeEventListener("click", resumeTimer);
-            pauseButton.addEventListener("click", pauseTimer);
-            startInterval();
+        function startNewPhase(phase) {
+    // Update session title without mentioning the phase
+    sessionTitle.textContent = `Session: ${currentSession}`;
+    timerElement.textContent = formatTime(remainingTime);
+
+    // Automatically start the timer for the new phase
+    paused = false;
+    controlButton.textContent = 'Pause';
+    timerInterval = setInterval(countdown, 1000);
+}
+
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         }
 
-        // Event Listeners
-        playButton.addEventListener("click", playTimer);
-
-        // Initial Setup
-        updateSessionDisplay();
+        function endPomodoro() {
+            timerPage.classList.add('hidden');
+            endPage.classList.remove('hidden');
+        }
     </script>
-
-
-
-    <script defer src="https://dagammla.gitlab.io/keep-silk-open/keep.js">
+     <script defer src="https://dagammla.gitlab.io/keep-silk-open/keep.js">
 </script>
-
 </body>
-</html>
+</
