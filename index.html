@@ -145,7 +145,7 @@
         let isWorkPhase = true;
         let timerInterval;
         let paused = true;
-        let remainingTime = 2; // 2 seconds for work phase (adjustable)
+        let remainingTime = 3000; // 2 seconds for work phase (adjustable)
 
         window.onbeforeunload = function () {
             return 'Are you sure you want to refresh?';
@@ -155,7 +155,7 @@
             totalSessions = sessions;
             currentSession = 1;
             sessionTitle.textContent = `Session: ${currentSession} `;
-            remainingTime = 2; // Reset timer to 2 seconds for work phase
+            remainingTime = 3000; // Reset timer to 2 seconds for work phase
             timerElement.textContent = formatTime(remainingTime);
             homepage.classList.add('hidden');
             timerPage.classList.remove('hidden');
@@ -185,7 +185,7 @@
                 if (isWorkPhase) {
                     // Transition to break phase
                     isWorkPhase = false;
-                    remainingTime = 2; // Set break duration
+                    remainingTime = 720; // Set break duration
                     startNewPhase('Break');
                 } else {
                     // Transition to next session or end Pomodoro
@@ -195,7 +195,7 @@
                     if (currentSession > totalSessions) {
                         endPomodoro();
                     } else {
-                        remainingTime = 2; // Set work duration
+                        remainingTime = 3000; // Set work duration
                         startNewPhase('Work');
                     }
                 }
