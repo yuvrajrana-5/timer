@@ -64,6 +64,48 @@
         .end-gif {
             width: 20%; /* Slightly larger than the welcome GIF */
         }
+
+        /* Responsiveness for smaller screens */
+        @media (max-width: 768px) {
+            #timer {
+                font-size: 2rem;
+            }
+            #sessionTitle {
+                font-size: 1.2rem;
+            }
+            .button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            .button-container {
+                flex-direction: column;
+            }
+            .welcome-gif {
+                width: 20%;
+            }
+            .end-gif {
+                width: 30%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #timer {
+                font-size: 1.5rem;
+            }
+            #sessionTitle {
+                font-size: 1rem;
+            }
+            .button {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+            .welcome-gif {
+                width: 30%;
+            }
+            .end-gif {
+                width: 40%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -90,8 +132,6 @@
         <img src="celebration.gif" alt="Congratulations Gif" class="end-gif">
     </div>
 
-
-
     <script>
         let timerElement = document.getElementById('timer');
         let sessionTitle = document.getElementById('sessionTitle');
@@ -105,7 +145,7 @@
         let isWorkPhase = true;
         let timerInterval;
         let paused = true;
-        let remainingTime = 3000; // 2 seconds for work phase (adjustable)
+        let remainingTime = 2; // 2 seconds for work phase (adjustable)
 
         window.onbeforeunload = function () {
             return 'Are you sure you want to refresh?';
@@ -115,7 +155,7 @@
             totalSessions = sessions;
             currentSession = 1;
             sessionTitle.textContent = `Session: ${currentSession} `;
-            remainingTime = 3000; // Reset timer to 2 seconds for work phase
+            remainingTime = 2; // Reset timer to 2 seconds for work phase
             timerElement.textContent = formatTime(remainingTime);
             homepage.classList.add('hidden');
             timerPage.classList.remove('hidden');
@@ -145,7 +185,7 @@
                 if (isWorkPhase) {
                     // Transition to break phase
                     isWorkPhase = false;
-                    remainingTime = 720; // Set break duration
+                    remainingTime = 2; // Set break duration
                     startNewPhase('Break');
                 } else {
                     // Transition to next session or end Pomodoro
@@ -155,7 +195,7 @@
                     if (currentSession > totalSessions) {
                         endPomodoro();
                     } else {
-                        remainingTime = 3000; // Set work duration
+                        remainingTime = 2; // Set work duration
                         startNewPhase('Work');
                     }
                 }
@@ -163,16 +203,12 @@
         }
 
         function startNewPhase(phase) {
-    // Update session title without mentioning the phase
-    sessionTitle.textContent = `Session: ${currentSession}`;
-    timerElement.textContent = formatTime(remainingTime);
-
-    // Automatically start the timer for the new phase
-    paused = false;
-    controlButton.textContent = 'Pause';
-    timerInterval = setInterval(countdown, 1000);
-}
-
+            sessionTitle.textContent = `Session: ${currentSession}`;
+            timerElement.textContent = formatTime(remainingTime);
+            paused = false;
+            controlButton.textContent = 'Pause';
+            timerInterval = setInterval(countdown, 1000);
+        }
 
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
@@ -185,6 +221,7 @@
             endPage.classList.remove('hidden');
         }
     </script>
+
      <script defer src="https://dagammla.gitlab.io/keep-silk-open/keep.js">
 </script>
 </body>
