@@ -59,52 +59,10 @@
             margin-bottom: 20px;
         }
         .welcome-gif {
-            width: 20%; /* Half the original size */
+            width: 10%; /* Half the original size */
         }
         .end-gif {
-            width: 30%; /* Slightly larger than the welcome GIF */
-        }
-
-        /* Responsiveness for smaller screens */
-        @media (max-width: 768px) {
-            #timer {
-                font-size: 2rem;
-            }
-            #sessionTitle {
-                font-size: 1.2rem;
-            }
-            .button {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            .button-container {
-                flex-direction: column;
-            }
-            .welcome-gif {
-                width: 20%;
-            }
-            .end-gif {
-                width: 30%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #timer {
-                font-size: 1.5rem;
-            }
-            #sessionTitle {
-                font-size: 1rem;
-            }
-            .button {
-                padding: 8px 16px;
-                font-size: 0.8rem;
-            }
-            .welcome-gif {
-                width: 30%;
-            }
-            .end-gif {
-                width: 40%;
-            }
+            width: 20%; /* Slightly larger than the welcome GIF */
         }
     </style>
 </head>
@@ -132,8 +90,7 @@
         <img src="celebration.gif" alt="Congratulations Gif" class="end-gif">
     </div>
 
-    <!-- Audio element for the alert sound -->
-    <audio id="timerAlert" src="alert.mp3" preload="auto"></audio>
+
 
     <script>
         let timerElement = document.getElementById('timer');
@@ -148,7 +105,7 @@
         let isWorkPhase = true;
         let timerInterval;
         let paused = true;
-        let remainingTime = 3000; // 3000 seconds for work phase (adjustable)
+        let remainingTime = 3000; // 2 seconds for work phase (adjustable)
 
         window.onbeforeunload = function () {
             return 'Are you sure you want to refresh?';
@@ -158,7 +115,7 @@
             totalSessions = sessions;
             currentSession = 1;
             sessionTitle.textContent = `Session: ${currentSession} `;
-            remainingTime = 3000; // Reset timer to 3000 seconds for work phase
+            remainingTime = 3000; // Reset timer to 2 seconds for work phase
             timerElement.textContent = formatTime(remainingTime);
             homepage.classList.add('hidden');
             timerPage.classList.remove('hidden');
@@ -184,14 +141,11 @@
 
             if (remainingTime <= 0) {
                 clearInterval(timerInterval);
-                
-                // Play the alert sound
-                playAlertSound();
 
                 if (isWorkPhase) {
                     // Transition to break phase
                     isWorkPhase = false;
-                    remainingTime = 720; // Set break duration 720
+                    remainingTime = 720; // Set break duration
                     startNewPhase('Break');
                 } else {
                     // Transition to next session or end Pomodoro
@@ -201,25 +155,24 @@
                     if (currentSession > totalSessions) {
                         endPomodoro();
                     } else {
-                        remainingTime = 3000; // Set work duration 3000
+                        remainingTime = 3000; // Set work duration
                         startNewPhase('Work');
                     }
                 }
             }
         }
 
-        function playAlertSound() {
-            const alertSound = document.getElementById('timerAlert');
-            alertSound.play(); // Play the alert sound when the timer ends
-        }
-
         function startNewPhase(phase) {
-            sessionTitle.textContent = `Session: ${currentSession}`;
-            timerElement.textContent = formatTime(remainingTime);
-            paused = false;
-            controlButton.textContent = 'Pause';
-            timerInterval = setInterval(countdown, 1000);
-        }
+    // Update session title without mentioning the phase
+    sessionTitle.textContent = `Session: ${currentSession}`;
+    timerElement.textContent = formatTime(remainingTime);
+
+    // Automatically start the timer for the new phase
+    paused = false;
+    controlButton.textContent = 'Pause';
+    timerInterval = setInterval(countdown, 1000);
+}
+
 
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
@@ -232,8 +185,6 @@
             endPage.classList.remove('hidden');
         }
     </script>
-
-
      <script defer src="https://dagammla.gitlab.io/keep-silk-open/keep.js">
 </script>
 </body>
